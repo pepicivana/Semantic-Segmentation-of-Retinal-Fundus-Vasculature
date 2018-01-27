@@ -9,14 +9,17 @@ import os
 
 def main(argv):
 
+########### add directory creation ############
+
 	parser = argparse.ArgumentParser()
+
 	parser.add_argument('--download_data', action='store_true', default=False,
 		                help='Turn on to download data to disk.')
 	parser.add_argument('--augment_data', action='store_true', default=False,
 		                help='Turn on to augment raw data.')
+
 	parser.add_argument('--raw_image_directory', default='../data/raw/',
 		                help='Directory for downloaded images')
-
 	parser.add_argument('--augmented_image_directory', default='../data/processed/',
 		                help='Augmented image directory')
 	parser.add_argument('--augmented_image_filename', default='augmented_images',
@@ -27,7 +30,7 @@ def main(argv):
 	parser.add_argument('--n_epochs', type=int, default=1000,
 						help='Number of training epochs.')
 
-	parser.add_argument('--save_dir', default='../models/',
+	parser.add_argument('--saved_model_directory', default='../models/',
 		                help='Directory for saving trained models')
 
 	parser.add_argument('--learning_rate', type=float, default=0.001,
@@ -43,12 +46,16 @@ def main(argv):
 
 	args = parser.parse_args()
 
+	if not os.path.isdir(args.raw_image_directory):
+		os.makedirs(args.raw_image_directory)
+		os.makedirs(args.augmented_image_directory)
+		os.makedirs(args.saved_model_directory)
+
+
 	if args.download_data:
-		print('Downloading datasets ...')
 		make_dataset(args)
 
 	if args.augment_data:
-		print('Augmenting raw datasets ...')
 		augment_data(args)
 
 	data = np.load(os.path.join(args.augmented_image_directory, args.augmented_image_filename + '.npz'))
