@@ -132,7 +132,7 @@ class Model:
 			for iteration in range(X_train.shape[0] // batch_size):
 				X_batch, y_batch = self.data_provider(X_train, y_train, iteration)
 				self.sess.run(self.training_op, feed_dict={self.X: X_batch, self.y: y_batch})
-			if epoch % 1 == 0:
+			if epoch % 10 == 0:
 				loss_train = []
 				loss_val = []
 				for j in range(self.X_validate.shape[0]):
@@ -167,10 +167,10 @@ class Model:
 		print('[*] Saving checkpoint ....')
 		model_name = 'model_{}_epoch_{}.ckpt'.format(datetime.now().strftime("%d:%H:%M:%S"), epoch)
 		self.saver = tf.train.Saver()
-		save_path = self.saver.save(self.sess, os.path.join(self.args.save_dir, model_name))
+		save_path = self.saver.save(self.sess, os.path.join(self.args.saved_model_directory, model_name))
 		print('[*] Checkpoint saved in file {}'.format(save_path))
 
 	def load(self, model_name):
 		print(" [*] Loading checkpoint...")
 		self.saver = tf.train.Saver()
-		self.saver.restore(self.sess, os.path.join(self.args.save_dir, model_name))
+		self.saver.restore(self.sess, os.path.join(self.args.saved_model_directory, model_name))
