@@ -22,7 +22,7 @@ def augment_data(args):
 	for image in image_list:
 		img = imread(os.path.join(raw_images_dir, image), as_grey=True).astype(np.float32)
 		img_segmented = imread(os.path.join(raw_annotations_dir, image[:-4] + '.tif')).astype(np.float32)
-				
+
 		img = scipy.misc.imresize(img, (512, 512))
 		img_segmented = scipy.misc.imresize(img_segmented, (512, 512))
 
@@ -37,15 +37,15 @@ def augment_data(args):
 		img_ud_warped, img_segmented_ud_warped = non_linear_warp_transform(img_ud, img_segmented_ud)
 
 		images_augmented.extend([img, img_lr, img_ud, img_warped, img_lr_warped, img_ud_warped])
-		annotations_augmented.extend([img_segmented, img_segmented_lr, img_segmented_ud, 
+		annotations_augmented.extend([img_segmented, img_segmented_lr, img_segmented_ud,
                               img_segmented_warped, img_segmented_lr_warped, img_segmented_ud_warped])
-        
+
 	images_augmented = np.array(images_augmented, dtype=np.float32)[:,:,:,np.newaxis]
 	annotations_augmented = np.array(annotations_augmented, dtype=np.float32)[:,:,:,np.newaxis]
 
 	data = train_val_test_split(args, images_augmented, annotations_augmented)
 	np.savez(augmented_images_path, X_train=data[0], y_train=data[1], X_validate=data[2], y_validate=data[3], X_test=data[4], y_test=data[5])
-        
+
 def normalize_image(img):
 	return((img - img.min()) / (img.max() - img.min()))
 
@@ -58,9 +58,9 @@ def train_val_test_split(args, images, annotations):
 	X_validate = images[int(0.6*samples):int(0.8*samples),:,:]
 	y_validate = annotations[int(0.6*samples):int(0.8*samples),:,:]
 	X_test = images[int(0.8*samples):,:,:]
-	y_test = annotations[int(0.8*samples):,:,:]	
+	y_test = annotations[int(0.8*samples):,:,:]
 	return [X_train, y_train, X_validate, y_validate, X_test, y_test]
-           
+
 def non_linear_warp_transform(img, annotation):
 	rows, cols = img.shape[0], img.shape[1]
 
