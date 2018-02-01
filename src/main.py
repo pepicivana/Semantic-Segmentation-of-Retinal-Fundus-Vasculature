@@ -9,7 +9,6 @@ import tensorflow as tf
 
 
 def main(argv):
-    ########### add directory creation ############
 
     parser = argparse.ArgumentParser()
 
@@ -47,10 +46,9 @@ def main(argv):
 
     args = parser.parse_args()
 
-    if not os.path.isdir(args.raw_image_directory):
-        os.makedirs(args.raw_image_directory)
-        os.makedirs(args.augmented_image_directory)
-        os.makedirs(args.saved_model_directory)
+    os.makedirs(args.raw_image_directory, exist_ok=True)
+    os.makedirs(args.augmented_image_directory, exist_ok=True)
+    os.makedirs(args.saved_model_directory, exist_ok=True)
 
     if args.download_data:
         make_dataset(args)
