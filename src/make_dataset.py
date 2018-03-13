@@ -33,4 +33,4 @@ def download_unzip_files(url_list, destination):
         temp_zip.close()
         zf = ZipFile('/tmp/tempfile.zip')
         zf.extractall(path=destination)
-        zf.close
+        zf.close()
