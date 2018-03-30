@@ -1,10 +1,8 @@
 # U-Net Vessel Segmentation
-
 ![U-Net output](https://github.com/b-schneller/U-Net-Vessel-Segmentation/blob/master/unet.png)
-
 ## Introduction
 
-Semantic segmentation technqiues attempt to label every pixel in an input image to belonging to a set of n classes. This code implements the [U-Net](https://arxiv.org/abs/1505.04597) architecture developed by Ronneberger, Fischer and  Brox for use in segmentating anatomical regions in medical images. In this implemention the network is trained and evaluated on [High-Resolution Funcdus Images](https://www5.cs.fau.de/research/data/fundus-images/) compiled for use by the Friedrich-Alexander-Universität Erlangen-Nürnberg. After training the model was able to achieve a Dice coefficient of 0.92 on the test data set.
+Semantic segmentation technqiues attempt to label every pixel of an input image a set of n classes. This code implements the [U-Net](https://arxiv.org/abs/1505.04597) architecture developed by Ronneberger, Fischer and  Brox for use in segmentating anatomical regions in medical images. In this implemention the network is trained and evaluated on [High-Resolution Funcdus Images](https://www5.cs.fau.de/research/data/fundus-images/) compiled for use by the Friedrich-Alexander-Universität Erlangen-Nürnberg. After training the model was able to achieve a Dice coefficient of 0.92 on the test data set.
 
 ## To Run
 
