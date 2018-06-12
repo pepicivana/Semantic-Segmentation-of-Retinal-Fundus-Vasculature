@@ -5,7 +5,6 @@ import argparse
 import sys
 import numpy as np
 import os
-import tensorflow as tf
 
 
 def main(argv):
@@ -36,6 +35,8 @@ def main(argv):
                         help='Optimizer learning rate')
     parser.add_argument('--early_stopping_max_checks', type=int, default=20,
                         help='Max checks without improvement for early stopping')
+    parser.add_argument('--keep_prob', type=float, default=0.8,
+                        help='Keep probability for dropout layers.')
 
     parser.add_argument('--train', action='store_true', default=False,
                         help='Set to True to train network')
