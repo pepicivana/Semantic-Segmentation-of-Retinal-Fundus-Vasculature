@@ -3,6 +3,7 @@ from datetime import datetime
 
 import numpy as np
 from scipy.misc import imsave
+from sklearn.metrics import roc_auc_score
 import tensorflow as tf
 import tensorlayer as tl
 
@@ -12,8 +13,6 @@ class Model:
         self.args = args
         self.X_train = data['X_train']
         self.y_train = data['y_train']
-        self.X_validate = data['X_validate']
-        self.y_validate = data['y_validate']
         self.X_test = data['X_test']
         self.y_test = data['y_test']
 
@@ -34,7 +33,9 @@ class Model:
             self.conv1 = tf.layers.conv2d(self.conv1, 64, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv1.2', kernel_initializer=initializer)
 
-            self.max_pool1 = tf.layers.max_pooling2d(self.conv1, pool_size=(2, 2), strides=(2, 2), padding='same',
+            self.drop1 = tf.nn.dropout(self.conv1, keep_prob=self.args.keep_prob, name='drop1')
+
+            self.max_pool1 = tf.layers.max_pooling2d(self.drop1, pool_size=(2, 2), strides=(2, 2), padding='same',
                                                      name='max_pool1')
 
             self.conv2 = tf.layers.conv2d(self.max_pool1, 128, kernel_size=(3, 3), padding='same',
@@ -43,7 +44,9 @@ class Model:
             self.conv2 = tf.layers.conv2d(self.conv2, 128, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv2.2', kernel_initializer=initializer)
 
-            self.max_pool2 = tf.layers.max_pooling2d(self.conv2, pool_size=(2, 2), strides=(2, 2), padding='same',
+            self.drop2 = tf.nn.dropout(self.conv2, keep_prob=self.args.keep_prob, name='drop2')
+
+            self.max_pool2 = tf.layers.max_pooling2d(self.drop2, pool_size=(2, 2), strides=(2, 2), padding='same',
                                                      name='max_pool2')
 
             self.conv3 = tf.layers.conv2d(self.max_pool2, 256, kernel_size=(3, 3), padding='same',
@@ -52,7 +55,9 @@ class Model:
             self.conv3 = tf.layers.conv2d(self.conv3, strides=(1, 1), filters=256, kernel_size=(3, 3), padding='same',
                                           activation=tf.nn.relu, name='conv3.2', kernel_initializer=initializer)
 
-            self.max_pool3 = tf.layers.max_pooling2d(self.conv3, pool_size=(2, 2), strides=(2, 2), padding='same',
+            self.drop3 = tf.nn.dropout(self.conv3, keep_prob=self.args.keep_prob, name='drop3')
+
+            self.max_pool3 = tf.layers.max_pooling2d(self.drop3, pool_size=(2, 2), strides=(2, 2), padding='same',
                                                      name='max_pool3')
 
             self.conv4 = tf.layers.conv2d(self.max_pool3, 512, kernel_size=(3, 3), padding='same',
@@ -61,7 +66,9 @@ class Model:
             self.conv4 = tf.layers.conv2d(self.conv4, 512, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv4.2', kernel_initializer=initializer)
 
-            self.max_pool4 = tf.layers.max_pooling2d(self.conv4, pool_size=(2, 2), strides=(2, 2), padding='same',
+            self.drop4 = tf.nn.dropout(self.conv4, keep_prob=self.args.keep_prob, name='drop4')
+
+            self.max_pool4 = tf.layers.max_pooling2d(self.drop4, pool_size=(2, 2), strides=(2, 2), padding='same',
                                                      name='max_pool4')
 
             self.conv5 = tf.layers.conv2d(self.max_pool4, 1024, kernel_size=(3, 3), padding='same',
@@ -70,10 +77,12 @@ class Model:
             self.conv5 = tf.layers.conv2d(self.conv5, 1024, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv5.2', kernel_initializer=initializer)
 
+            self.drop5 = tf.nn.dropout(self.conv5, keep_prob=self.args.keep_prob, name='drop5')
+
             # ================== Expanding Path ===================
 
 
-            self.deconv1 = tf.layers.conv2d_transpose(self.conv5, 512, kernel_size=(2, 2), strides=(2, 2),
+            self.deconv1 = tf.layers.conv2d_transpose(self.drop5, 512, kernel_size=(2, 2), strides=(2, 2),
                                                       padding='same',
                                                       activation=tf.nn.relu, name='upconv1.1',
                                                       kernel_initializer=initializer)
@@ -86,7 +95,9 @@ class Model:
             self.conv6 = tf.layers.conv2d(self.conv6, 512, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv6.2', kernel_initializer=initializer)
 
-            self.deconv2 = tf.layers.conv2d_transpose(self.conv6, 256, kernel_size=(2, 2), strides=(2, 2),
+            self.drop6 = tf.nn.dropout(self.conv6, keep_prob=self.args.keep_prob, name='drop6')
+
+            self.deconv2 = tf.layers.conv2d_transpose(self.drop6, 256, kernel_size=(2, 2), strides=(2, 2),
                                                       padding='same',
                                                       activation=tf.nn.relu, name='upconv2.1',
                                                       kernel_initializer=initializer)
@@ -99,7 +110,9 @@ class Model:
             self.conv7 = tf.layers.conv2d(self.conv7, 256, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv7.2', kernel_initializer=initializer)
 
-            self.deconv3 = tf.layers.conv2d_transpose(self.conv7, 128, kernel_size=(2, 2), strides=(2, 2),
+            self.drop7 = tf.nn.dropout(self.conv7, keep_prob=self.args.keep_prob, name='drop7')
+
+            self.deconv3 = tf.layers.conv2d_transpose(self.drop7, 128, kernel_size=(2, 2), strides=(2, 2),
                                                       padding='same',
                                                       activation=tf.nn.relu, name='upconv3.1',
                                                       kernel_initializer=initializer)
@@ -112,7 +125,9 @@ class Model:
             self.conv8 = tf.layers.conv2d(self.conv8, 128, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv8.2', kernel_initializer=initializer)
 
-            self.deconv4 = tf.layers.conv2d_transpose(self.conv8, 64, kernel_size=(2, 2), strides=(2, 2),
+            self.drop8 = tf.nn.dropout(self.conv8, keep_prob=self.args.keep_prob, name='drop8')
+
+            self.deconv4 = tf.layers.conv2d_transpose(self.drop8, 64, kernel_size=(2, 2), strides=(2, 2),
                                                       padding='same',
                                                       activation=tf.nn.relu, name='upconv4.1',
                                                       kernel_initializer=initializer)
@@ -125,7 +140,9 @@ class Model:
             self.conv9 = tf.layers.conv2d(self.conv9, 64, kernel_size=(3, 3), padding='same', activation=tf.nn.relu,
                                           name='conv9.2', kernel_initializer=initializer)
 
-            self.logits = tf.layers.conv2d(self.conv9, 1, kernel_size=(1, 1), padding='same', activation=tf.nn.sigmoid,
+            self.drop9 = tf.nn.dropout(self.conv9, keep_prob=self.args.keep_prob, name='drop9')
+
+            self.logits = tf.layers.conv2d(self.drop9, 1, kernel_size=(1, 1), padding='same', activation=tf.nn.sigmoid,
                                            name='logits', kernel_initializer=initializer)
 
         with tf.name_scope('loss'):
@@ -159,8 +176,8 @@ class Model:
             if epoch % 10 == 0:
                 loss_train = []
                 loss_val = []
-                for j in range(self.X_validate.shape[0]):
-                    X_val_batch, y_val_batch = self.data_provider(self.X_validate, self.y_validate, j)
+                for j in range(self.X_train.shape[0]):
+                    X_val_batch, y_val_batch = self.data_provider(self.X_train, self.y_train, j)
                     loss_val.append(
                         self.loss.eval(session=self.sess, feed_dict={self.X: X_val_batch, self.y: y_val_batch}))
                     X_train_batch, y_train_batch = self.data_provider(X_train, y_train, j)
@@ -183,10 +200,20 @@ class Model:
     def infer(self):
         self.sess = tf.Session()
         self.load(self.args.load_checkpoint)
+        dice_list = []
+        roc_list = []
         for iteration in range(self.X_test.shape[0] // self.args.batch_size):
-            X_batch, _ = self.data_provider(self.X_test, self.y_test, iteration)
+            X_batch, y_batch = self.data_provider(self.X_test, self.y_test, iteration)
             output = self.sess.run(self.logits, feed_dict={self.X: X_batch})
-            imsave('../data/output/{}.jpg'.format(iteration), np.squeeze(output))
+            output_mask = np.squeeze((output > 0.5).astype(dtype=np.float32))
+            y_batch = np.squeeze(y_batch)
+            y_batch_mask = y_batch > 0.5
+            y_batch_mask = y_batch_mask.astype(np.int64)
+            dice_list.append(np.sum(output_mask[y_batch_mask == 1.0])*2.0 / (np.sum(output_mask) + np.sum(y_batch_mask)))
+            roc_list.append(roc_auc_score(y_true = y_batch_mask.flatten(), y_score = np.squeeze(output).flatten()))
+            # imsave('../data/output/{}.png'.format(iteration), np.squeeze(output))
+            # imsave('../data/output/{}_anno.png'.format(iteration), np.squeeze(y_batch))
+        print((sum(dice_list) / len(dice_list)), sum(roc_list)/len(roc_list))
 
     def data_provider(self, X, y, iteration):
         begin = self.args.batch_size * iteration
