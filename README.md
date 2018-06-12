@@ -7,10 +7,15 @@ Semantic segmentation technqiues attempt to label every pixel of an input image 
 ## To Run
 
 Clone the repo, and move to the main directory.
+
 `cd ~/U-Net-Vessel-Segmentation/src`
+
 Install the dependencies.
+
 `$ pip install -r requirements.txt`
+
 If running for the first time run:
+
 `python main.py --make_dataset` and optionally `--augment_data`
 
 The operation `--make_dataset` creates the data directory structure and downloads the image files and their expert labeled annotations. 
@@ -22,15 +27,23 @@ Data augmentation, which is highly recommended, includes up/down and left/right 
 
 `python main.py --train`
 #### Optional settings include:
+
 `--n_points`: Number of points from each cloud to sample for training/testing. Required for mini-batch training.
+
 `--batch_size`: Batch size for training/testing
+
 `--n_epochs`: Number of passes through training set.
+
 `--early_stopping_max_checks`: Stop early when loss does not improve for max_checks.
+
 `--learning_rate`: Learning rate for Adam Optimizer. This is the initial learning rate. The rate will is halved every 50 epochs.
 
 ## To Test
 
 Testing requires saved model after training. 
+
 To run test:
+
 `python main.py --infer --load_checkpoint <saved_model_name>.ckpt`
+
 The labeled output images will be saved in `~/U-Net-Vessel-Segmentation/data/output/`
