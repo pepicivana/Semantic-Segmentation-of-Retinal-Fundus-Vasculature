@@ -24,13 +24,17 @@ def make_dataset(args):
     else:
         print('Image files are already saved in image directory')
 
+        download_unzip_files(image_urls, image_destination)
+        download_unzip_files(annotation_urls, annotation_destination)
+
+
 
 def download_unzip_files(url_list, destination):
     for url in url_list:
         zip_resp = urlopen(url)
-        temp_zip = open('/tmp/tempfile.zip', 'wb')
+        temp_zip = open('tempfile.zip', 'wb+')
         temp_zip.write(zip_resp.read())
         temp_zip.close()
-        zf = ZipFile('/tmp/tempfile.zip')
+        zf = ZipFile('tempfile.zip')
         zf.extractall(path=destination)
         zf.close()
